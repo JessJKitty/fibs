@@ -1,59 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script type="text/javascript">
-   
-var BOARD_DIM = 4;
-
-
-// generate dictionary of fibonacci numbers
-
-var fib = [];
-
-fib[0] = 0;
-fib[1] = 1;
-for(var i = 2; i < 40; i++)
-{
-    // Next fibonacci number = previous + one before previous
-    // Translated to JavaScript:
-    fib[i] = fib[i-2] + fib[i-1];
-    console.log(fib[i]);
-}
-
-  // reverse the array to get a "dictionary"
-
-var dict = []; 
-
-for (var i = 0; i < 40; i++)
-{
-  dict[fib[i]] = i;
-  console.log(fib[i], i);
-}
-
-// initialize array
-var board = [];
-
-for (var i = 0; i < BOARD_DIM; i ++)
-{
-    board[i] = [];
-}
-
-//fill board with the numbers 0, 1, 1, or 2
-for (var i = 0; i < BOARD_DIM; i++)
-{
-  for (var j = 0; j < BOARD_DIM; j++) 
-  {
-    num = Math.floor((Math.random()*4));
-    board[i][j] = fib[num]; 
-  }
-  console.log(board[i]);
-}
-
-   /* $(function(){ // I use jQuery in this example
-       document.getElementById('click_me').onclick = 
-           function () { alert('Hi'); };
-   }); */ 
-</script>
+<script src="fibs.js"></script>
 </head>
 <body></body>
 </html>
