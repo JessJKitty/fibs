@@ -40,6 +40,7 @@ function start_board(board){
     for (var j = 0; j < BOARD_DIM; j++) 
     {
       num = Math.floor((Math.random()*4));
+      console.log(i, j, num);
       if (num == 1) { 
         board[i][j] = 0;
       }
@@ -47,10 +48,18 @@ function start_board(board){
         board[i][j] = num;
       } 
     }
-    console.log(board[i]);
   }
+  print_board(board);
+  return board;
 }
 
+
+function print_board(board) {
+  for (var i = 0; i < BOARD_DIM; i++) {
+    document.write(board[i] + "<br>");
+  }
+  document.write("<br>");
+}
 
 // returns the largest number on the board.
 function largest(board){
@@ -79,19 +88,17 @@ function next_piece(board){
 }
 
 // valid_move_row(board[]) will return true if the line has a possible move.
-function valid_move_row(board){
-  console.log(83);
+function valid_move_row(row){
+//  console.log(83);
   for (var j = 0; j < (BOARD_DIM - 1); j++){
-    if (board[j] == 0){
-      return true;
-    console.log(87);
-    }
-    else if (board[j] == board[j + 1] && board[j] == 2){
+    if (row[j] == 0){
       return true;
     }
-    else if (Math.abs(board[j] - board[j + 1]) == 1){
+    else if (row[j] == row[j + 1] && row[j] == 2){
       return true;
-      console.log(94);
+    }
+    else if (Math.abs(row[j] - row[j + 1]) == 1){
+      return true;
     }
     else {
       return false;
@@ -102,13 +109,9 @@ function valid_move_row(board){
 
 //valid move returns true if a move to the left is true. 
 function valid_move(board){
-  console.log(105); 
   for (var i = 0; i < BOARD_DIM; i++){
-    console.log(107);
-    console.log(board);
     if (valid_move_row(board[i])){
       return true;
-      console.log(110);
     }
   }
   return false;
@@ -117,41 +120,45 @@ function valid_move(board){
 
 
 function move_left(piece, board){
-  console.log(0);
+//  console.log(0);
   pieceplaced = false;
-  console.log(board);
+//  console.log(board);
   if (valid_move(board)){
-    console.log("valid move")
-    for (var i = 0; i < BOARD_DIM; i++){ 
+    console.log("valid move");
+    for (var i = 0; i < BOARD_DIM; i++){  
       for (var j = 1; j < BOARD_DIM; j++){
+        console.log(i, j);
         if (board[i][j - 1] == 0){
-           board[i][j - 1] = board[i][j]; 
-           board[i][j] = 0;
-           console.log(1);
+          board[i][j - 1] = board[i][j]; 
+          board[i][j] = 0;
+          console.log("shifted something left");
         }
         else if (board[i][j - 1] == board[i][j] && board[i][j] == 2){
           board[i][j - 1] == 3;
           board[i][j] == 0;
+          console.log("combined two ones");
         }
         else if (Math.abs(board[i][j - 1] - board[i][j]) == 1){
           board[i][j - 1] = Math.max(board[i][j - 1], board[i][j]) + 1;
           board[i][j] = 0;
-          console.log(2);
+          console.log("combined two numbers");
         }
         else{
-          console.log("you broke everything");
+          console.log("did nothing");
         }
       }
-      if (!pieceplaced && board[i][BOARD_DIM - 1] == 0){
+      if (!pieceplaced && (board[i][BOARD_DIM - 1] == 0)){
+        board[i][BOARD_DIM - 1] = piece;
         pieceplaced = true; 
-        board[i][BOARD_DIM - 1] == piece;
       }
-      console.log(board[i]);
+      //console.log(board[i]);
+      console.log("---------------")
     }
+    return board;
   }
   else{
     console.log("Invalid Move!");
-    return board
+    return board;
   }
 }
 
@@ -160,10 +167,8 @@ function move_left(piece, board){
 
 // doing things, blah, like 1. generate the next piece 2. listen for the next thing that's clicked. 
 
-
-playerboard = newboard();
-playerboard = start_board(playerboard);
-move_left(2, playerboard);
+playerboard = move_left(2, start_board(newboard()));
+print_board(playerboard);
 
 
 
