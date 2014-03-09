@@ -1,4 +1,3 @@
-   
 //"global" variables
 var BOARD_DIM = 4;
 
@@ -164,19 +163,140 @@ function move_left(piece, board){
 
 
 
+/* instead of writing a billion functions for moving, I'm going to write a function for rotation by 90
+ and flipping horizontally. This is the most efficient use of my time (although not so great algorithmically */
+function flip(board){
+  //document.write("miew");
+  flipboard = newboard();
+  for (var i = 0; i < BOARD_DIM; i++){
+    for (var j = 0; j < BOARD_DIM; j++){
+      //document.write("miew2")
+      flipboard[i][(BOARD_DIM - 1) - j] = board[i][j];
+      //document.write("miew"); 
+    }
+  }
+  return flipboard;
+}
 
-// doing things, blah, like 1. generate the next piece 2. listen for the next thing that's clicked. 
+function move_right(piece, board){
+  board = flip(board);
+  //document.write("miew");
+  board = move_left(piece, board);
+  //document.write("miew");
+  board = flip(board);
+  //document.write("miew");
+  return board;
+}
 
-playerboard = move_left(2, start_board(newboard()));
+function rotate(board){
+  rotated = newboard();
+  for (var i = 0; i < BOARD_DIM; i++){
+    for (var j = 0; j < BOARD_DIM; j++){
+      rotated[i][j] = board[j][i];
+    }
+  }
+  rotated = flip(rotated);
+  return rotated;
+}
+
+function backrotate(board){
+  return rotate(rotate(rotate(board)));
+}
+
+function move_down(piece, board){
+  board = rotate(board);
+//  document.write("rotated <br>");
+//  print_board(board);
+  board = move_left(piece, board);
+//  document.write("move_left<br>");
+//  print_board(board);
+  board = backrotate(board);
+  //document.write("rotated back<br>");
+  //print_board(board);
+  return board;
+}
+
+function move_up(piece, board){
+  board = backrotate(board);
+  board = move_left(piece, board);
+  board = rotate(board);
+  return board;
+}
+
+/* Testing functions for movement:
+playerboard = move_left(3, start_board(newboard()));
 print_board(playerboard);
+document.write("left success <br>");
+playerboard = move_right(3, playerboard);
+print_board(playerboard);
+document.write("right success <br>");
 
 
+playerboard = start_board(newboard());
+playerboard = move_up(2, playerboard);
+print_board(playerboard);
+document.write("up success <br>");
 
 
+playerboard = start_board(newboard());
+playerboard = move_down(3, playerboard); 
+print_board(playerboard);
+document.write("down success");
+*/
+
+
+// doing things, blah, like listen for the next thing that's clicked. 
 // what happens when you click the correct button?
+/**
+ * Handles keystrokes.
+ */
 
+playerboard = start_board(newboard());
+piece = next_piece(playerboard);
+document.write("<br> next piece = ", piece)
 
+function keyListener(event){ 
+  //whatever we want to do goes in this block
+  event = event || window.event; //capture the event, and ensure we have an event
+  var key = event.key || event.which || event.keyCode; //find the key that was pressed
+  //MDN is better at this: https://developer.mozilla.org/en-US/docs/DOM/event.which
+  // left arrow
+  if (key === 37 || key === 65 || key === 97)
+  {  
+    move_left(piece, playerboard);
+    console.log("left key pushed");
+  }
 
+  // up arrow
+  else if (key === 38 || key === 87 || key === 119)
+  {
+      move_up(piece, playerboard);
+      console.log("up key pushed");
+  }
+
+  // right arrow
+  else if (key === 39 || key === 68 || key === 100)
+  {
+      move_right(piece, playerboard);
+      console.log("right key pushed");
+  }
+
+  // down arrow
+  else if (event.keyCode == 40 || key === 83 || key === 115)
+  {
+      move_down(piece, playerboard);
+      console.log("down key pushed");
+  }
+  else{
+    alert("use the (left, right, up, and down) or (WASD) keys to make moves!")
+  }
+  print_board(playerboard);
+  document.write("miew");
+  piece = next_piece(playerboard);
+  document.write("<br> next piece = ", piece)
+}
+
+document.addEventListener('keyup', keyListener, false);
 
 /* now useless code:
 
