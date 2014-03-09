@@ -18,6 +18,8 @@ function genfib(){
   return fib;
 }
 
+var fib = genfib();
+
 // initialize array
 
 function newboard(){
@@ -39,7 +41,7 @@ function start_board(board){
     for (var j = 0; j < BOARD_DIM; j++) 
     {
       num = Math.floor((Math.random()*4));
-      console.log(i, j, num);
+      //console.log(i, j, num);
       if (num == 1) { 
         board[i][j] = 0;
       }
@@ -54,10 +56,20 @@ function start_board(board){
 
 
 function print_board(board) {
+  var html = '<table style="width:300px">';
   for (var i = 0; i < BOARD_DIM; i++) {
-    document.write(board[i] + "<br>");
+    html += "<tr>";
+    for (var j = 0; j < BOARD_DIM; j++){
+      html += "<td>" + fib[board[i][j]] + "</td>";
+    }
+    html += "</tr>";
   }
-  document.write("<br>");
+  html += "</table>"
+  document.getElementById('game').innerHTML = html;
+}
+
+function print_piece(piece){
+  document.getElementById('next').innerHTML = "<br> next piece = " + fib[piece];
 }
 
 // returns the largest number on the board.
@@ -80,7 +92,7 @@ function next_piece(board){
   piecemax = Math.max(largest(board) - 1, 2);
   num = Math.random()/2; 
   for (var i = piecemax; i >= 0; i--){
-    if (num <= (1 / i^2)){
+    if (num <= (1 / i^4)){
       return i;
     }
   }
@@ -90,26 +102,25 @@ function next_piece(board){
 function valid_move_row(row){
 //  console.log(83);
   for (var j = 0; j < (BOARD_DIM - 1); j++){
-    if (row[j] == 0){
+    if (row[j] == 0 && !(row[j + 1] == 0)){
       return true;
     }
-    else if (row[j] == row[j + 1] && row[j] == 2){
+    else if (row[j] == 2 && row[j + 1] == 2){
+      console.log("we can combine two ones");
       return true;
     }
     else if (Math.abs(row[j] - row[j + 1]) == 1){
       return true;
     }
-    else {
-      return false;
-      
-    }
   }
+  return false;
 }
 
 //valid move returns true if a move to the left is true. 
 function valid_move(board){
   for (var i = 0; i < BOARD_DIM; i++){
     if (valid_move_row(board[i])){
+      console.log("valid move");
       return true;
     }
   }
@@ -124,35 +135,39 @@ function move_left(piece, board){
 //  console.log(board);
   if (valid_move(board)){
     console.log("valid move");
-    for (var i = 0; i < BOARD_DIM; i++){  
+    for (var i = 0; i < BOARD_DIM; i++){
+      rowmoved = false;  
       for (var j = 1; j < BOARD_DIM; j++){
-        console.log(i, j);
-        if (board[i][j - 1] == 0){
+        //console.log(i, j);
+        if (board[i][j - 1] == 0 && !(board[i][j] == 0)){
           board[i][j - 1] = board[i][j]; 
           board[i][j] = 0;
+          rowmoved = true;
           console.log("shifted something left");
         }
-        else if (board[i][j - 1] == board[i][j] && board[i][j] == 2){
-          board[i][j - 1] == 3;
-          board[i][j] == 0;
+        else if ((board[i][j - 1] == 2) && (board[i][j] == 2)){
+          board[i][j - 1] = 3;
+          board[i][j] = 0;
+          rowmoved = true;
           console.log("combined two ones");
         }
         else if (Math.abs(board[i][j - 1] - board[i][j]) == 1){
           board[i][j - 1] = Math.max(board[i][j - 1], board[i][j]) + 1;
           board[i][j] = 0;
+          rowmoved = true;
           console.log("combined two numbers");
         }
         else{
           console.log("did nothing");
         }
       }
-      if (!pieceplaced && (board[i][BOARD_DIM - 1] == 0)){
+      if (!pieceplaced && (board[i][BOARD_DIM - 1] == 0) && rowmoved == true){
         board[i][BOARD_DIM - 1] = piece;
         pieceplaced = true; 
       }
       //console.log(board[i]);
-      console.log("---------------")
     }
+    console.log("---------------")
     return board;
   }
   else{
@@ -223,26 +238,40 @@ function move_up(piece, board){
   return board;
 }
 
-/* Testing functions for movement:
+
+/* // Testing functions for movement: 
+
+document.write("testingfunctions <br>")
+
 playerboard = move_left(3, start_board(newboard()));
 print_board(playerboard);
 document.write("left success <br>");
+
 playerboard = move_right(3, playerboard);
 print_board(playerboard);
 document.write("right success <br>");
 
 
-playerboard = start_board(newboard());
+//playerboard = start_board(newboard());
 playerboard = move_up(2, playerboard);
 print_board(playerboard);
 document.write("up success <br>");
 
 
-playerboard = start_board(newboard());
+//playerboard = start_board(newboard());
 playerboard = move_down(3, playerboard); 
 print_board(playerboard);
 document.write("down success");
-*/
+
+*/ 
+
+
+function end_game(board){
+  if (!valid_move(board) && !valid_move(flip(board)) && !valid_move(rotate(board)) && !valid_move(backrotate(board))){
+    return true;
+  }
+  return false;
+}
 
 
 // doing things, blah, like listen for the next thing that's clicked. 
@@ -251,52 +280,64 @@ document.write("down success");
  * Handles keystrokes.
  */
 
-playerboard = start_board(newboard());
-piece = next_piece(playerboard);
-document.write("<br> next piece = ", piece)
+
+var playerboard = start_board(newboard());
+var piece = next_piece(playerboard);
+print_piece(piece);
 
 function keyListener(event){ 
-  //whatever we want to do goes in this block
+  ///whatever we want to do goes in this block
   event = event || window.event; //capture the event, and ensure we have an event
   var key = event.key || event.which || event.keyCode; //find the key that was pressed
   //MDN is better at this: https://developer.mozilla.org/en-US/docs/DOM/event.which
+  
+
+  //var key = e.keyCode ? e.keyCode : e.which;
+
   // left arrow
+
   if (key === 37 || key === 65 || key === 97)
   {  
-    move_left(piece, playerboard);
+    playerboard = move_left(piece, playerboard);
     console.log("left key pushed");
+
   }
 
   // up arrow
   else if (key === 38 || key === 87 || key === 119)
   {
-      move_up(piece, playerboard);
+      playerboard = move_up(piece, playerboard);
       console.log("up key pushed");
   }
 
   // right arrow
   else if (key === 39 || key === 68 || key === 100)
   {
-      move_right(piece, playerboard);
+      playerboard = move_right(piece, playerboard);
       console.log("right key pushed");
   }
 
   // down arrow
-  else if (event.keyCode == 40 || key === 83 || key === 115)
+  else if (key == 40 || key === 83 || key === 115)
   {
-      move_down(piece, playerboard);
+      playerboard = move_down(piece, playerboard);
       console.log("down key pushed");
   }
   else{
-    alert("use the (left, right, up, and down) or (WASD) keys to make moves!")
+    alert("use the (left, right, up, and down) or (WASD) keys to make moves!");
   }
+
   print_board(playerboard);
-  document.write("miew");
   piece = next_piece(playerboard);
-  document.write("<br> next piece = ", piece)
+  print_piece(piece);
+  if (end_game(playerboard)){
+    alert("Oh no! There are no more possible moves! Try again?");
+  }
 }
 
 document.addEventListener('keyup', keyListener, false);
+
+
 
 /* now useless code:
 
