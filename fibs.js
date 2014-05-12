@@ -56,11 +56,15 @@ function start_board(board){
 
 
 function print_board(board) {
-  var html = '<table style="width:300px">';
+  var html = '<table align="center" border= "1" style="width:200px"> <col width="50"><col width="50"><col width="50"><col width="50">';
   for (var i = 0; i < BOARD_DIM; i++) {
     html += "<tr>";
     for (var j = 0; j < BOARD_DIM; j++){
-      html += "<td>" + fib[board[i][j]] + "</td>";
+      if (fib[board[i][j]] != 0){
+      html += "<td height=\"40\">" + fib[board[i][j]] + "</td>";
+      }
+      else{ html += "<td height=\"40\">" +"</td>";
+      }
     }
     html += "</tr>";
   }
@@ -90,12 +94,13 @@ function largest(board){
 // returns the next piece. Note that this is slightly inefficient, and I should do things more efficiently. 
 function next_piece(board){
   piecemax = Math.max(largest(board) - 1, 2);
-  num = Math.random()/2; 
-  for (var i = piecemax; i >= 0; i--){
-    if (num <= (1 / i^4)){
-      return i;
+
+  for (var i = 0, piece = 2; i < piecemax; i++, piece++){
+    if (Math.random() < 0.5){
+      break
     }
   }
+  return piece;
 }
 
 // valid_move_row(board[]) will return true if the line has a possible move.
@@ -324,14 +329,14 @@ function keyListener(event){
       console.log("down key pushed");
   }
   else{
-    alert("use the (left, right, up, and down) or (WASD) keys to make moves!");
+    document.getElementById('keys').innerHTML = "use the (left, right, up, and down) or (WASD) keys to make moves!";
   }
 
   print_board(playerboard);
   piece = next_piece(playerboard);
   print_piece(piece);
   if (end_game(playerboard)){
-    alert("Oh no! There are no more possible moves! Try again?");
+    document.getElementById('next').innerHTML = "Oh no! There are no more possible moves! Try again?";
   }
 }
 
@@ -353,7 +358,27 @@ for (var i = 0; i < 40; i++)
 }
 
 
-var nopiecemoved = true;
+
+function keyListener(e)
+{
+    var key = e.keyCode ? e.keyCode : e.which;
+    
+    if (key === 37 || key === 65 || key === 97) {
+        alert('left');
+    }else if (key === 38 || key === 87 || key === 119) {
+        alert('up');
+    }else if (key === 39 || key === 68 || key === 100) {
+        alert('right');
+    }else if (event.keyCode == 40 || key === 83 || key === 115) {
+        alert('down');
+    }
+    
+}
+
+document.addEventListener('keyup', keyListener, false);
+
+
+
 
 */
 
