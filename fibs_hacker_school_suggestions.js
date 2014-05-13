@@ -92,13 +92,25 @@ function next_piece(board, list) {
 
 //this valid pair function operates on only fibonacci numbers right now.  
 function valid_pair(a, b, list){
+    // extend the list if it's getting too short:
+    a_ind = list.indexOf(a);
+    b_ind = list.indexOf(b);
+    if (a_ind == list.length - 1){
+        list[a_ind + 1] = list[a_ind] + list[a_ind - 1];
+    }
+
+    if (b_ind == list.length - 1){
+        list[b_ind + 1] = list[b_ind] + list[b_ind - 1];
+    }
+
+
     if (a == undefined || b == undefined){
         return true;
     }
-    else if (list.indexOf(a) == 1 && list.indexOf(b) == 1){
+    else if (a_ind == 1 && b_ind == 1){
         return true;
     }
-    else if (Math.abs(list.indexOf(a) - list.indexOf(b)) == 1){
+    else if (Math.abs(a_ind - b_ind == 1){
         return true;
     }
     return false; 
